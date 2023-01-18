@@ -102,56 +102,74 @@ main
 		SendComand
 			UART1_Write
 			RS485_WaitReturn
-	DrawScreen
-		Glcd_Fill
-			Glcd_Set_Page
-				Strobe
-					Delay_10us
-			Glcd_Write_Data
-				Strobe
-					Delay_10us
-		DrawLabel
-			Glcd_Set_Font_Adv
-			Glcd_Write_Text_Adv
-				Glcd_Move_Cursor
-				_Glcd_Write_Char_AdvE
-					_Glcd_getHeader
+	PrintScreen
+		strcpy
+		DrawScreen
+			Glcd_Fill
+				Glcd_Set_Page
+					Strobe
+						Delay_10us
+				Glcd_Write_Data
+					Strobe
+						Delay_10us
+			DrawLabel
+				Glcd_Set_Font_Adv
+				Glcd_Write_Text_Adv
+					Glcd_Move_Cursor
+					_Glcd_Write_Char_AdvE
+						_Glcd_getHeader
+							____DoIFC
+						Mul_16X16_U
 						____DoIFC
+						Glcd_Dot
+							Glcd_Set_Side
+							Glcd_Set_Page
+								Strobe
+									Delay_10us
+							Glcd_Set_X
+								Strobe
+									Delay_10us
+							Glcd_Read_Data
+								Delay_1us
+								Delay_10us
+							Glcd_Write_Data
+								Strobe
+									Delay_10us
+					_Glcd_Write_Char_Adv
+						Glcd_Set_Font_Adv
+						Glcd_Dot
+							Glcd_Set_Side
+							Glcd_Set_Page
+								Strobe
+									Delay_10us
+							Glcd_Set_X
+								Strobe
+									Delay_10us
+							Glcd_Read_Data
+								Delay_1us
+								Delay_10us
+							Glcd_Write_Data
+								Strobe
+									Delay_10us
+			DrawLine
+				Glcd_Line
+					Glcd_Dot
+						Glcd_Set_Side
+						Glcd_Set_Page
+							Strobe
+								Delay_10us
+						Glcd_Set_X
+							Strobe
+								Delay_10us
+						Glcd_Read_Data
+							Delay_1us
+							Delay_10us
+						Glcd_Write_Data
+							Strobe
+								Delay_10us
+			DrawImage
+				Glcd_PartialImage
 					Mul_16X16_U
-					____DoIFC
-					Glcd_Dot
-						Glcd_Set_Side
-						Glcd_Set_Page
-							Strobe
-								Delay_10us
-						Glcd_Set_X
-							Strobe
-								Delay_10us
-						Glcd_Read_Data
-							Delay_1us
-							Delay_10us
-						Glcd_Write_Data
-							Strobe
-								Delay_10us
-				_Glcd_Write_Char_Adv
-					Glcd_Set_Font_Adv
-					Glcd_Dot
-						Glcd_Set_Side
-						Glcd_Set_Page
-							Strobe
-								Delay_10us
-						Glcd_Set_X
-							Strobe
-								Delay_10us
-						Glcd_Read_Data
-							Delay_1us
-							Delay_10us
-						Glcd_Write_Data
-							Strobe
-								Delay_10us
-		DrawLine
-			Glcd_Line
-				Glcd_Dot
 					Glcd_Set_Side
 					Glcd_Set_Page
 						Strobe
@@ -165,22 +183,6 @@ main
 					Glcd_Write_Data
 						Strobe
 							Delay_10us
-		DrawImage
-			Glcd_PartialImage
-				Mul_16X16_U
-				Glcd_Set_Side
-				Glcd_Set_Page
-					Strobe
-						Delay_10us
-				Glcd_Set_X
-					Strobe
-						Delay_10us
-				Glcd_Read_Data
-					Delay_1us
-					Delay_10us
-				Glcd_Write_Data
-					Strobe
-						Delay_10us
 UART_RCV
 	UART1_Read
 	DecodificaProtocolo

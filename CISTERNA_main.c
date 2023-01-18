@@ -26,13 +26,15 @@
  SW2.1 ->ON (RC6-RX USB-UART)
  SW3.1 ->ON (LED ON PORTA/E)
  SW4.6 ->Lcd ON
- PULL-UP RA3..RA6
+ PULL-UP RA3..RA5
+ RA6..RA7 CRYSTAL OSCILLATOR
 */
 
 unsigned char lv_cist1 =0;
 unsigned char lv_cist2 = 0;
 unsigned char lv_cistRua = 0;
 unsigned char lv_cxRua = 0;
+unsigned char lv_cxRua2 = 0;
 unsigned char RT_pump_cist=0;
 unsigned char RT_pump_rua=0;
 unsigned char V2V_On;
@@ -53,6 +55,8 @@ struct glcd_tmp {
   unsigned char tmp_lv_cistRua;
   unsigned char tmp_RT_pump_cist;
   unsigned char tmp_RT_pump_rua;
+  unsigned char tmp_lv_Rua;
+  unsigned char tmp_lv_Rua2;
 } tmp_glcd;
 
 
@@ -77,6 +81,7 @@ bool_t SendComand(char* Comand, unsigned char* TxtReturn, uint16_t TimeOut);
 void DecodificaProtocolo();
 void REEnviarDados(unsigned char *retData);
 void Timers_Init();
+void PrintScreen(unsigned char current);
 
 void UART_RCV() iv 0x0008 ics ICS_AUTO
 {
@@ -139,10 +144,12 @@ void main() {
    tempoLed = start_timer(2);
    tempoSmsg = start_timer(20);
    // initial conditions
-   tmpBtn0 = 0;
-   tmpBtn1 = 0;
+   tmpBtn0 = 1;
    tmpAut = 1;//modo automatico
+   tmpBtn1 = 0;
    tmpV2V = 0;//condição inicial fechada
+
+
 
   while(TRUE)
     {
@@ -167,32 +174,29 @@ void main() {
         Delay_ms(500);         //Retorna 1 se retorno ocorrer com sucesso.
                                //Retorna 0 se retorno falhar.
        }
+       }
        tmpBtn0=tmpAut;   //confirma comparativo
        tmpBtn1=tmpV2V;   //confirma comparativo
        PORTA.RA2= 0; //desliga led
-      }
+
       //condições para atualizar tela GLCD
-      if(tmp_glcd.tmp_lv_cist1!=lv_cist1 || tmp_glcd.tmp_lv_cist2!=lv_cist2 || tmp_glcd.tmp_lv_cistRua != lv_cistRua || tmp_glcd.tmp_RT_pump_rua)
+      if(tmp_glcd.tmp_lv_cist1!=lv_cist1 || tmp_glcd.tmp_lv_cist2!=lv_cist2 || tmp_glcd.tmp_lv_cistRua != lv_cistRua || 
+      tmp_glcd.tmp_RT_pump_rua != RT_pump_rua || tmp_glcd.tmp_RT_pump_cist != RT_pump_cist || tmp_glcd.tmp_lv_Rua != lv_cxRua)
       {
-      
-      
+       PrintScreen(curr_screen);
+       //reseta variaveis tmp
+       tmp_glcd.tmp_lv_cist1=lv_cist1;
+       tmp_glcd.tmp_lv_cist2=lv_cist2;
+       tmp_glcd.tmp_lv_cistRua = lv_cistRua;
+       tmp_glcd.tmp_RT_pump_rua = RT_pump_rua;
+       tmp_glcd.tmp_RT_pump_cist = RT_pump_cist;
+       tmp_glcd.tmp_lv_Rua = lv_cxRua;
       }
       if(BTN_INCR)
       {
         ++curr_screen;
         if(curr_screen>2)curr_screen=0;
-        switch (curr_screen)
-        {
-          case 0:
-          DrawScreen(&Tela_Inicial);
-          break;
-          case 1:
-          DrawScreen(&Screen2);
-          break;
-          case 2:
-          DrawScreen(&Screen1);
-          break;
-        }
+        PrintScreen(curr_screen);
       }
     }
 }
@@ -208,10 +212,7 @@ void Init_cfgMCU()
    /*TRISA.TRISA1 = 1; //inputs
    TRISA.TRISA2 = 1;*/
    PORTA.RA2 = 0;
-   PORTA.RA3=1;
-   PORTA.RA4=1;
-   PORTA.RA5=1;
-   PORTA.RA6=1;
+   TRISC.TRISC0 = 1;
 }
 
 void DecodificaProtocolo()
@@ -311,4 +312,30 @@ void Timers_Init()
  TMR0H         = 0x63;
  TMR0L         = 0xC0; //20 ms
  TMR0ON_bit = 1;
+}
+
+void PrintScreen(unsigned char current)
+{
+  switch (current)
+        {
+          case 0:
+          if(lv_cistRua==0)strcpy(NvCistP.Caption, "Vazia");
+          else strcpy(NvCistP.Caption, "Cheia");
+          if(lv_cist1==0)strcpy(NvCist1.Caption, "Vazia");
+          else strcpy(NvCist1.Caption, "Cheia");
+          if(lv_cist2==0)strcpy(NvCist2.Caption, "Vazia");
+          else strcpy(NvCist2.Caption, "Cheia");
+          if(lv_cxRua==0)strcpy(NvCistR.Caption, "Vazia");
+          else strcpy(NvCistR.Caption, "Cheia");
+          DrawScreen(&Tela_Inicial);
+          break;
+          case 1:
+          if(lv_cxRua2==0)strcpy(NvCxRua02.Caption, "Vazia");
+          else strcpy(NvCxRua02.Caption, "Cheia");
+          DrawScreen(&Screen_cxRua);
+          break;
+          case 2:
+          DrawScreen(&Screen2);
+          break;
+        }
 }

@@ -59,18 +59,6 @@ struct Screen {
  TLine * const code *Lines;
 };
 
-extern TScreen Screen1;
-extern TImage Image1;
-extern TLabel Label1;
-extern TImage Image2;
-extern TLabel Label2;
-extern TLabel Label3;
-extern TImage Image3;
-extern TLabel Label4;
-extern TLabel * const code Screen1_Labels[4];
-extern TImage * const code Screen1_Images[3];
-
-
 extern TScreen Tela_Inicial;
 extern TLabel Label6;
 extern TLabel Label7;
@@ -83,8 +71,8 @@ extern TLabel Label5;
 extern TLabel Label9;
 extern TLine Line3;
 extern TLine Line4;
-extern TLabel * const code Screen2_Labels[9];
-extern TLine * const code Screen2_Lines[2];
+extern TLabel * const code Screen1_Labels[9];
+extern TLine * const code Screen1_Lines[2];
 
 
 extern TScreen Screen2;
@@ -100,8 +88,18 @@ extern TLabel Label18;
 extern TLine Line1;
 extern TLine Line2;
 extern TImage Image4;
-extern TLabel * const code Screen3_Labels[9];
-extern TImage * const code Screen3_Images[1];
+extern TLabel * const code Screen2_Labels[9];
+extern TImage * const code Screen2_Images[1];
+extern TLine * const code Screen2_Lines[2];
+
+
+extern TScreen Screen_cxRua;
+extern TLabel NvCxRua02;
+extern TLabel Label25;
+extern TLabel Label26;
+extern TLine Line5;
+extern TLine Line6;
+extern TLabel * const code Screen3_Labels[3];
 extern TLine * const code Screen3_Lines[2];
 
 
@@ -112,13 +110,6 @@ extern TLine * const code Screen3_Lines[2];
 
 
 
-extern char Image1_Caption[];
-extern char Label1_Caption[];
-extern char Image2_Caption[];
-extern char Label2_Caption[];
-extern char Label3_Caption[];
-extern char Image3_Caption[];
-extern char Label4_Caption[];
 extern char Label6_Caption[];
 extern char Label7_Caption[];
 extern char Label8_Caption[];
@@ -142,6 +133,11 @@ extern char Label18_Caption[];
 extern char Line1_Caption[];
 extern char Line2_Caption[];
 extern char Image4_Caption[];
+extern char NvCxRua02_Caption[];
+extern char Label25_Caption[];
+extern char Label26_Caption[];
+extern char Line5_Caption[];
+extern char Line6_Caption[];
 
 
 void DrawScreen(TScreen *aScreen);
@@ -151,11 +147,12 @@ void DrawLine(TLine *Aline);
 void Check_TP();
 void Start_TP();
 #line 1 "c:/users/talles/documents/talles/01_w3e/07-projetos_iot/altavis/glcd/master_glcd/cisterna_code/mikroc pro for pic/defs.h"
-#line 32 "C:/Users/Talles/Documents/Talles/01_W3E/07-PROJETOS_IOT/ALTAVIS/GLCD/MASTER_GLCD/CISTERNA_Code/mikroC PRO for PIC/CISTERNA_main.c"
+#line 33 "C:/Users/Talles/Documents/Talles/01_W3E/07-PROJETOS_IOT/ALTAVIS/GLCD/MASTER_GLCD/CISTERNA_Code/mikroC PRO for PIC/CISTERNA_main.c"
 unsigned char lv_cist1 =0;
 unsigned char lv_cist2 = 0;
 unsigned char lv_cistRua = 0;
 unsigned char lv_cxRua = 0;
+unsigned char lv_cxRua2 = 0;
 unsigned char RT_pump_cist=0;
 unsigned char RT_pump_rua=0;
 unsigned char V2V_On;
@@ -176,6 +173,8 @@ struct glcd_tmp {
  unsigned char tmp_lv_cistRua;
  unsigned char tmp_RT_pump_cist;
  unsigned char tmp_RT_pump_rua;
+ unsigned char tmp_lv_Rua;
+ unsigned char tmp_lv_Rua2;
 } tmp_glcd;
 
 
@@ -200,6 +199,7 @@ void Init_cfgMCU();
 void DecodificaProtocolo();
 void REEnviarDados(unsigned char *retData);
 void Timers_Init();
+void PrintScreen(unsigned char current);
 
 void UART_RCV() iv 0x0008 ics ICS_AUTO
 {
@@ -262,10 +262,12 @@ void main() {
  tempoLed =  (2+ticks) ;
  tempoSmsg =  (20+ticks) ;
 
- tmpBtn0 = 0;
- tmpBtn1 = 0;
+ tmpBtn0 = 1;
  tmpAut = 1;
+ tmpBtn1 = 0;
  tmpV2V = 0;
+
+
 
  while( 1 )
  {
@@ -276,7 +278,7 @@ void main() {
  tmpAut ^= 1;
  ctrl_msg = (tmpAut==0)?0:1;
  }
- if( (Button(&PORTA, 6, 50, 0)) )
+ if( (Button(&PORTC, 0, 50, 0)) )
  {
  tmpV2V ^= 1;
 
@@ -290,32 +292,29 @@ void main() {
  Delay_ms(500);
 
  }
+ }
  tmpBtn0=tmpAut;
  tmpBtn1=tmpV2V;
  PORTA.RA2= 0;
- }
 
- if(tmp_glcd.tmp_lv_cist1!=lv_cist1 || tmp_glcd.tmp_lv_cist2!=lv_cist2 || tmp_glcd.tmp_lv_cistRua != lv_cistRua || tmp_glcd.tmp_RT_pump_rua)
+
+ if(tmp_glcd.tmp_lv_cist1!=lv_cist1 || tmp_glcd.tmp_lv_cist2!=lv_cist2 || tmp_glcd.tmp_lv_cistRua != lv_cistRua ||
+ tmp_glcd.tmp_RT_pump_rua != RT_pump_rua || tmp_glcd.tmp_RT_pump_cist != RT_pump_cist || tmp_glcd.tmp_lv_Rua != lv_cxRua)
  {
+ PrintScreen(curr_screen);
 
-
+ tmp_glcd.tmp_lv_cist1=lv_cist1;
+ tmp_glcd.tmp_lv_cist2=lv_cist2;
+ tmp_glcd.tmp_lv_cistRua = lv_cistRua;
+ tmp_glcd.tmp_RT_pump_rua = RT_pump_rua;
+ tmp_glcd.tmp_RT_pump_cist = RT_pump_cist;
+ tmp_glcd.tmp_lv_Rua = lv_cxRua;
  }
  if( (Button(&PORTA, 4, 50, 0)) )
  {
  ++curr_screen;
  if(curr_screen>2)curr_screen=0;
- switch (curr_screen)
- {
- case 0:
- DrawScreen(&Tela_Inicial);
- break;
- case 1:
- DrawScreen(&Screen2);
- break;
- case 2:
- DrawScreen(&Screen1);
- break;
- }
+ PrintScreen(curr_screen);
  }
  }
 }
@@ -328,12 +327,9 @@ void Init_cfgMCU()
  TRISA.TRISA4 = 1;
  TRISA.TRISA5 = 1;
  TRISA.TRISA6 = 1;
-#line 210 "C:/Users/Talles/Documents/Talles/01_W3E/07-PROJETOS_IOT/ALTAVIS/GLCD/MASTER_GLCD/CISTERNA_Code/mikroC PRO for PIC/CISTERNA_main.c"
+#line 214 "C:/Users/Talles/Documents/Talles/01_W3E/07-PROJETOS_IOT/ALTAVIS/GLCD/MASTER_GLCD/CISTERNA_Code/mikroC PRO for PIC/CISTERNA_main.c"
  PORTA.RA2 = 0;
- PORTA.RA3=1;
- PORTA.RA4=1;
- PORTA.RA5=1;
- PORTA.RA6=1;
+ TRISC.TRISC0 = 1;
 }
 
 void DecodificaProtocolo()
@@ -367,7 +363,7 @@ void DecodificaProtocolo()
  UART1_Write(*Comand);
  Comand++;
  }
-#line 253 "C:/Users/Talles/Documents/Talles/01_W3E/07-PROJETOS_IOT/ALTAVIS/GLCD/MASTER_GLCD/CISTERNA_Code/mikroC PRO for PIC/CISTERNA_main.c"
+#line 254 "C:/Users/Talles/Documents/Talles/01_W3E/07-PROJETOS_IOT/ALTAVIS/GLCD/MASTER_GLCD/CISTERNA_Code/mikroC PRO for PIC/CISTERNA_main.c"
  return RS485_WaitReturn(TxtReturn, TimeOut);
 }
 
@@ -429,4 +425,30 @@ void Timers_Init()
  TMR0H = 0x63;
  TMR0L = 0xC0;
  TMR0ON_bit = 1;
+}
+
+void PrintScreen(unsigned char current)
+{
+ switch (current)
+ {
+ case 0:
+ if(lv_cistRua==0)strcpy(NvCistP.Caption, "Vazia");
+ else strcpy(NvCistP.Caption, "Cheia");
+ if(lv_cist1==0)strcpy(NvCist1.Caption, "Vazia");
+ else strcpy(NvCist1.Caption, "Cheia");
+ if(lv_cist2==0)strcpy(NvCist2.Caption, "Vazia");
+ else strcpy(NvCist2.Caption, "Cheia");
+ if(lv_cxRua==0)strcpy(NvCistR.Caption, "Vazia");
+ else strcpy(NvCistR.Caption, "Cheia");
+ DrawScreen(&Tela_Inicial);
+ break;
+ case 1:
+ if(lv_cxRua2==0)strcpy(NvCxRua02.Caption, "Vazia");
+ else strcpy(NvCxRua02.Caption, "Cheia");
+ DrawScreen(&Screen_cxRua);
+ break;
+ case 2:
+ DrawScreen(&Screen2);
+ break;
+ }
 }

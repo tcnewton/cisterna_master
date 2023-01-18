@@ -57,18 +57,6 @@ struct Screen {
   TLine                 * const code *Lines;
 };
 
-extern   TScreen                Screen1;
-extern   TImage               Image1;
-extern   TLabel                 Label1;
-extern   TImage               Image2;
-extern   TLabel                 Label2;
-extern   TLabel                 Label3;
-extern   TImage               Image3;
-extern   TLabel                 Label4;
-extern   TLabel                 * const code Screen1_Labels[4];
-extern   TImage                 * const code Screen1_Images[3];
-
-
 extern   TScreen                Tela_Inicial;
 extern   TLabel                 Label6;
 extern   TLabel                 Label7;
@@ -81,8 +69,8 @@ extern   TLabel                 Label5;
 extern   TLabel                 Label9;
 extern   TLine                  Line3;
 extern   TLine                  Line4;
-extern   TLabel                 * const code Screen2_Labels[9];
-extern   TLine                  * const code Screen2_Lines[2];
+extern   TLabel                 * const code Screen1_Labels[9];
+extern   TLine                  * const code Screen1_Lines[2];
 
 
 extern   TScreen                Screen2;
@@ -98,8 +86,18 @@ extern   TLabel                 Label18;
 extern   TLine                  Line1;
 extern   TLine                  Line2;
 extern   TImage               Image4;
-extern   TLabel                 * const code Screen3_Labels[9];
-extern   TImage                 * const code Screen3_Images[1];
+extern   TLabel                 * const code Screen2_Labels[9];
+extern   TImage                 * const code Screen2_Images[1];
+extern   TLine                  * const code Screen2_Lines[2];
+
+
+extern   TScreen                Screen_cxRua;
+extern   TLabel                 NvCxRua02;
+extern   TLabel                 Label25;
+extern   TLabel                 Label26;
+extern   TLine                  Line5;
+extern   TLine                  Line6;
+extern   TLabel                 * const code Screen3_Labels[3];
 extern   TLine                  * const code Screen3_Lines[2];
 
 
@@ -110,13 +108,6 @@ extern   TLine                  * const code Screen3_Lines[2];
 
 /////////////////////////////////
 // Caption variables Declarations
-extern char Image1_Caption[];
-extern char Label1_Caption[];
-extern char Image2_Caption[];
-extern char Label2_Caption[];
-extern char Label3_Caption[];
-extern char Image3_Caption[];
-extern char Label4_Caption[];
 extern char Label6_Caption[];
 extern char Label7_Caption[];
 extern char Label8_Caption[];
@@ -140,6 +131,11 @@ extern char Label18_Caption[];
 extern char Line1_Caption[];
 extern char Line2_Caption[];
 extern char Image4_Caption[];
+extern char NvCxRua02_Caption[];
+extern char Label25_Caption[];
+extern char Label26_Caption[];
+extern char Line5_Caption[];
+extern char Line6_Caption[];
 /////////////////////////////////
 
 void DrawScreen(TScreen *aScreen);

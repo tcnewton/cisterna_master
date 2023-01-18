@@ -15,6 +15,6 @@
 #define BTN_ENTER  (Button(&PORTA, 3, 50, 0))
 #define BTN_INCR   (Button(&PORTA, 4, 50, 0))
 #define BTN_MANAUT (Button(&PORTA, 5, 50, 0))
-#define BTN_V2V    (Button(&PORTA, 6, 50, 0))
+#define BTN_V2V    (Button(&PORTC, 0, 50, 0))
 
 #endif

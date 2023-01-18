@@ -55,37 +55,6 @@ static void InitializeTouchPanel() {
 /////////////////////////
   TScreen*  CurrentScreen;
 
-  TScreen                Screen1;
-  TImage               Image1;
-  TLabel                 Label1;
-char Label1_Caption[6] = "CIST2";
-
-  TImage               Image2;
-  TLabel                 Label2;
-char Label2_Caption[6] = "CIST1";
-
-  TLabel                 Label3;
-char Label3_Caption[17] = "VOLUME CISTERNAS";
-
-  TImage               Image3;
-  TLabel                 Label4;
-char Label4_Caption[7] = "CIST_R";
-
-  TLabel                 * const code Screen1_Labels[4]=
-         {
-         &Label1,              
-         &Label2,              
-         &Label3,              
-         &Label4               
-         };
-  TImage                 * const code Screen1_Images[3]=
-         {
-         &Image1,              
-         &Image2,              
-         &Image3               
-         };
-
-
   TScreen                Tela_Inicial;
   TLabel                 Label6;
 char Label6_Caption[20] = "Nv. Cist A        :";
@@ -116,7 +85,7 @@ char Label9_Caption[20] = "Nivel Caixas D\'agua";
 
   TLine                  Line3;
   TLine                  Line4;
-  TLabel                 * const code Screen2_Labels[9]=
+  TLabel                 * const code Screen1_Labels[9]=
          {
          &Label6,              
          &Label7,              
@@ -128,7 +97,7 @@ char Label9_Caption[20] = "Nivel Caixas D\'agua";
          &Label5,              
          &Label9               
          };
-  TLine                  * const code Screen2_Lines[2]=
+  TLine                  * const code Screen1_Lines[2]=
          {
          &Line3,               
          &Line4                
@@ -166,7 +135,7 @@ char Label18_Caption[14] = "Miscellaneous";
   TLine                  Line1;
   TLine                  Line2;
   TImage               Image4;
-  TLabel                 * const code Screen3_Labels[9]=
+  TLabel                 * const code Screen2_Labels[9]=
          {
          &Label10,             
          &Label11,             
@@ -178,154 +147,67 @@ char Label18_Caption[14] = "Miscellaneous";
          &Label17,             
          &Label18              
          };
-  TImage                 * const code Screen3_Images[1]=
+  TImage                 * const code Screen2_Images[1]=
          {
          &Image4               
          };
-  TLine                  * const code Screen3_Lines[2]=
+  TLine                  * const code Screen2_Lines[2]=
          {
          &Line1,               
          &Line2                
          };
 
 
+  TScreen                Screen_cxRua;
+  TLabel                 NvCxRua02;
+char NvCxRua02_Caption[6] = "Vazia";
+
+  TLabel                 Label25;
+char Label25_Caption[16] = "Nv. Cx Rua 02 :";
+
+  TLabel                 Label26;
+char Label26_Caption[20] = "Nivel Caixas D\'agua";
+
+  TLine                  Line5;
+  TLine                  Line6;
+  TLabel                 * const code Screen3_Labels[3]=
+         {
+         &NvCxRua02,           
+         &Label25,             
+         &Label26              
+         };
+  TLine                  * const code Screen3_Lines[2]=
+         {
+         &Line5,               
+         &Line6                
+         };
+
+
 
 
 static void InitializeObjects() {
-  Screen1.LabelsCount               = 4;
-  Screen1.Labels                    = Screen1_Labels;
-  Screen1.ImagesCount               = 3;
-  Screen1.Images                    = Screen1_Images;
-  Screen1.LinesCount                = 0;
-  Screen1.ObjectsCount              = 7;
-
   Tela_Inicial.LabelsCount               = 9;
-  Tela_Inicial.Labels                    = Screen2_Labels;
+  Tela_Inicial.Labels                    = Screen1_Labels;
   Tela_Inicial.ImagesCount               = 0;
   Tela_Inicial.LinesCount                = 2;
-  Tela_Inicial.Lines                     = Screen2_Lines;
+  Tela_Inicial.Lines                     = Screen1_Lines;
   Tela_Inicial.ObjectsCount              = 11;
 
   Screen2.LabelsCount               = 9;
-  Screen2.Labels                    = Screen3_Labels;
+  Screen2.Labels                    = Screen2_Labels;
   Screen2.ImagesCount               = 1;
-  Screen2.Images                    = Screen3_Images;
+  Screen2.Images                    = Screen2_Images;
   Screen2.LinesCount                = 2;
-  Screen2.Lines                     = Screen3_Lines;
+  Screen2.Lines                     = Screen2_Lines;
   Screen2.ObjectsCount              = 12;
 
+  Screen_cxRua.LabelsCount               = 3;
+  Screen_cxRua.Labels                    = Screen3_Labels;
+  Screen_cxRua.ImagesCount               = 0;
+  Screen_cxRua.LinesCount                = 2;
+  Screen_cxRua.Lines                     = Screen3_Lines;
+  Screen_cxRua.ObjectsCount              = 5;
 
-  Image1.OwnerScreen     = &Screen1;
-  Image1.Order           = 0;
-  Image1.Left            = 90;
-  Image1.Top             = 14;
-  Image1.Width           = 30;
-  Image1.Height          = 30;
-  Image1.PictureWidth    = 30;
-  Image1.PictureHeight   = 30;
-  Image1.Picture_Name    = CX_bmp;
-  Image1.Visible         = 1;
-  Image1.Active          = 1;
-  Image1.OnUpPtr         = 0;
-  Image1.OnDownPtr       = 0;
-  Image1.OnClickPtr      = 0;
-  Image1.OnPressPtr      = 0;
-
-  Label1.OwnerScreen     = &Screen1;
-  Label1.Order           = 1;
-  Label1.Left            = 95;
-  Label1.Top             = 49;
-  Label1.Width           = 21;
-  Label1.Height          = 12;
-  Label1.Visible         = 1;
-  Label1.Active          = 1;
-  Label1.Caption         = Label1_Caption;
-  Label1.FontName        = Calibri8x11_Bold;
-  Label1.Font_Color      = 1;
-  Label1.OnUpPtr         = 0;
-  Label1.OnDownPtr       = 0;
-  Label1.OnClickPtr      = 0;
-  Label1.OnPressPtr      = 0;
-
-  Image2.OwnerScreen     = &Screen1;
-  Image2.Order           = 2;
-  Image2.Left            = 48;
-  Image2.Top             = 14;
-  Image2.Width           = 30;
-  Image2.Height          = 30;
-  Image2.PictureWidth    = 30;
-  Image2.PictureHeight   = 30;
-  Image2.Picture_Name    = CX_bmp;
-  Image2.Visible         = 1;
-  Image2.Active          = 1;
-  Image2.OnUpPtr         = 0;
-  Image2.OnDownPtr       = 0;
-  Image2.OnClickPtr      = 0;
-  Image2.OnPressPtr      = 0;
-
-  Label2.OwnerScreen     = &Screen1;
-  Label2.Order           = 3;
-  Label2.Left            = 53;
-  Label2.Top             = 49;
-  Label2.Width           = 21;
-  Label2.Height          = 12;
-  Label2.Visible         = 1;
-  Label2.Active          = 1;
-  Label2.Caption         = Label2_Caption;
-  Label2.FontName        = Calibri8x11_Bold;
-  Label2.Font_Color      = 1;
-  Label2.OnUpPtr         = 0;
-  Label2.OnDownPtr       = 0;
-  Label2.OnClickPtr      = 0;
-  Label2.OnPressPtr      = 0;
-
-  Label3.OwnerScreen     = &Screen1;
-  Label3.Order           = 4;
-  Label3.Left            = 23;
-  Label3.Top             = 1;
-  Label3.Width           = 84;
-  Label3.Height          = 11;
-  Label3.Visible         = 1;
-  Label3.Active          = 1;
-  Label3.Caption         = Label3_Caption;
-  Label3.FontName        = Franklin_Gothic_Demi9x12_Regular;
-  Label3.Font_Color      = 1;
-  Label3.OnUpPtr         = 0;
-  Label3.OnDownPtr       = 0;
-  Label3.OnClickPtr      = 0;
-  Label3.OnPressPtr      = 0;
-
-  Image3.OwnerScreen     = &Screen1;
-  Image3.Order           = 5;
-  Image3.Left            = 7;
-  Image3.Top             = 14;
-  Image3.Width           = 30;
-  Image3.Height          = 30;
-  Image3.PictureWidth    = 30;
-  Image3.PictureHeight   = 30;
-  Image3.Picture_Name    = CX_bmp;
-  Image3.Visible         = 1;
-  Image3.Active          = 1;
-  Image3.OnUpPtr         = 0;
-  Image3.OnDownPtr       = 0;
-  Image3.OnClickPtr      = 0;
-  Image3.OnPressPtr      = 0;
-
-  Label4.OwnerScreen     = &Screen1;
-  Label4.Order           = 6;
-  Label4.Left            = 9;
-  Label4.Top             = 49;
-  Label4.Width           = 26;
-  Label4.Height          = 12;
-  Label4.Visible         = 1;
-  Label4.Active          = 1;
-  Label4.Caption         = Label4_Caption;
-  Label4.FontName        = Calibri8x11_Bold;
-  Label4.Font_Color      = 1;
-  Label4.OnUpPtr         = 0;
-  Label4.OnDownPtr       = 0;
-  Label4.OnClickPtr      = 0;
-  Label4.OnPressPtr      = 0;
 
   Label6.OwnerScreen     = &Tela_Inicial;
   Label6.Order           = 0;
@@ -662,6 +544,70 @@ static void InitializeObjects() {
   Image4.OnDownPtr       = 0;
   Image4.OnClickPtr      = 0;
   Image4.OnPressPtr      = 0;
+
+  NvCxRua02.OwnerScreen     = &Screen_cxRua;
+  NvCxRua02.Order           = 0;
+  NvCxRua02.Left            = 93;
+  NvCxRua02.Top             = 13;
+  NvCxRua02.Width           = 22;
+  NvCxRua02.Height          = 12;
+  NvCxRua02.Visible         = 1;
+  NvCxRua02.Active          = 1;
+  NvCxRua02.Caption         = NvCxRua02_Caption;
+  NvCxRua02.FontName        = Constantia9x11_Regular;
+  NvCxRua02.Font_Color      = 1;
+  NvCxRua02.OnUpPtr         = 0;
+  NvCxRua02.OnDownPtr       = 0;
+  NvCxRua02.OnClickPtr      = 0;
+  NvCxRua02.OnPressPtr      = 0;
+
+  Label25.OwnerScreen     = &Screen_cxRua;
+  Label25.Order           = 1;
+  Label25.Left            = 6;
+  Label25.Top             = 13;
+  Label25.Width           = 61;
+  Label25.Height          = 12;
+  Label25.Visible         = 1;
+  Label25.Active          = 1;
+  Label25.Caption         = Label25_Caption;
+  Label25.FontName        = Constantia9x11_Regular;
+  Label25.Font_Color      = 1;
+  Label25.OnUpPtr         = 0;
+  Label25.OnDownPtr       = 0;
+  Label25.OnClickPtr      = 0;
+  Label25.OnPressPtr      = 0;
+
+  Label26.OwnerScreen     = &Screen_cxRua;
+  Label26.Order           = 2;
+  Label26.Left            = 6;
+  Label26.Top             = 1;
+  Label26.Width           = 81;
+  Label26.Height          = 10;
+  Label26.Visible         = 1;
+  Label26.Active          = 1;
+  Label26.Caption         = Label26_Caption;
+  Label26.FontName        = Bahnschrift_SemiBold8x11_Regular;
+  Label26.Font_Color      = 1;
+  Label26.OnUpPtr         = 0;
+  Label26.OnDownPtr       = 0;
+  Label26.OnClickPtr      = 0;
+  Label26.OnPressPtr      = 0;
+
+  Line5.OwnerScreen     = &Screen_cxRua;
+  Line5.Order           = 3;
+  Line5.First_Point_X   = 3;
+  Line5.First_Point_Y   = 61;
+  Line5.Second_Point_X  = 119;
+  Line5.Second_Point_Y  = 61;
+  Line5.Visible         = 1;
+
+  Line6.OwnerScreen     = &Screen_cxRua;
+  Line6.Order           = 4;
+  Line6.First_Point_X   = 3;
+  Line6.First_Point_Y   = 12;
+  Line6.Second_Point_X  = 119;
+  Line6.Second_Point_Y  = 12;
+  Line6.Visible         = 1;
 }
 
 static char IsInsideObject (unsigned int X, unsigned int Y, unsigned int Left, unsigned int Top, unsigned int Width, unsigned int Height) { // static
