@@ -73,14 +73,14 @@ extern   TLabel                 * const code Screen1_Labels[9];
 extern   TLine                  * const code Screen1_Lines[2];
 
 
-extern   TScreen                Screen2;
+extern   TScreen                Misc1;
 extern   TLabel                 Label10;
 extern   TLabel                 Label11;
 extern   TLabel                 Label12;
 extern   TLabel                 RT_BP;
-extern   TLabel                 Label14;
-extern   TLabel                 Label15;
-extern   TLabel                 Label16;
+extern   TLabel                 Rt_BCist;
+extern   TLabel                 ManText;
+extern   TLabel                 V2VTxt;
 extern   TLabel                 Label17;
 extern   TLabel                 Label18;
 extern   TLine                  Line1;
@@ -97,7 +97,9 @@ extern   TLabel                 Label25;
 extern   TLabel                 Label26;
 extern   TLine                  Line5;
 extern   TLine                  Line6;
-extern   TLabel                 * const code Screen3_Labels[3];
+extern   TLabel                 Label1;
+extern   TLabel                 StatV2V;
+extern   TLabel                 * const code Screen3_Labels[5];
 extern   TLine                  * const code Screen3_Lines[2];
 
 
@@ -123,9 +125,9 @@ extern char Label10_Caption[];
 extern char Label11_Caption[];
 extern char Label12_Caption[];
 extern char RT_BP_Caption[];
-extern char Label14_Caption[];
-extern char Label15_Caption[];
-extern char Label16_Caption[];
+extern char Rt_BCist_Caption[];
+extern char ManText_Caption[];
+extern char V2VTxt_Caption[];
 extern char Label17_Caption[];
 extern char Label18_Caption[];
 extern char Line1_Caption[];
@@ -136,6 +138,8 @@ extern char Label25_Caption[];
 extern char Label26_Caption[];
 extern char Line5_Caption[];
 extern char Line6_Caption[];
+extern char Label1_Caption[];
+extern char StatV2V_Caption[];
 /////////////////////////////////
 
 void DrawScreen(TScreen *aScreen);

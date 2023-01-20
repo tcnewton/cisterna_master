@@ -57,6 +57,7 @@ struct glcd_tmp {
   unsigned char tmp_RT_pump_rua;
   unsigned char tmp_lv_Rua;
   unsigned char tmp_lv_Rua2;
+  unsigned char tmp_status_v2v;
 } tmp_glcd;
 
 
@@ -72,6 +73,11 @@ unsigned char ii;
 volatile unsigned long int ticks = 0;  //Variável responsável por armazenar o incremento do Tick Timer
 unsigned long tempoLed;
 unsigned long tempoSmsg;
+unsigned char statusV2V=0;
+//setup mode variables
+bit SetupMode;
+unsigned char setupPos = 0;
+
 
 
 void Init_cfgMCU();
@@ -82,6 +88,7 @@ void DecodificaProtocolo();
 void REEnviarDados(unsigned char *retData);
 void Timers_Init();
 void PrintScreen(unsigned char current);
+void SetModeChgVar(unsigned char position);
 
 void UART_RCV() iv 0x0008 ics ICS_AUTO
 {
@@ -154,34 +161,10 @@ void main() {
   while(TRUE)
     {
       Delay_ms(10);
-      
-      if(BTN_MANAUT)//RA5
-      {
-       tmpAut ^= 1; //toggle tmpAut
-       ctrl_msg = (tmpAut==0)?0:1;
-      }
-      if(BTN_V2V) //RA6
-      {
-       tmpV2V ^= 1; //toggle tmpAut
-       /*if(tmpAut==1)tmpBtn1 = tmpV2V;*/
-       ctrl_msg = (tmpV2V==0)?2:3;
-      }
-      if(tmpAut!=tmpBtn0 || tmpV2V!=tmpBtn1) //comparativo para enviar msg
-      {
-       while(!RS484_Init(ctrl_msg))
-       {
-        PORTA.RA2 ^= 1;        //Enquanto o módulo não receber cofirmação de recebimento de cmd
-        Delay_ms(500);         //Retorna 1 se retorno ocorrer com sucesso.
-                               //Retorna 0 se retorno falhar.
-       }
-       }
-       tmpBtn0=tmpAut;   //confirma comparativo
-       tmpBtn1=tmpV2V;   //confirma comparativo
-       PORTA.RA2= 0; //desliga led
 
       //condições para atualizar tela GLCD
       if(tmp_glcd.tmp_lv_cist1!=lv_cist1 || tmp_glcd.tmp_lv_cist2!=lv_cist2 || tmp_glcd.tmp_lv_cistRua != lv_cistRua || 
-      tmp_glcd.tmp_RT_pump_rua != RT_pump_rua || tmp_glcd.tmp_RT_pump_cist != RT_pump_cist || tmp_glcd.tmp_lv_Rua != lv_cxRua)
+      tmp_glcd.tmp_RT_pump_rua != RT_pump_rua || tmp_glcd.tmp_RT_pump_cist != RT_pump_cist || tmp_glcd.tmp_lv_Rua != lv_cxRua || tmp_glcd.tmp_status_v2v != statusV2V)
       {
        PrintScreen(curr_screen);
        //reseta variaveis tmp
@@ -191,12 +174,35 @@ void main() {
        tmp_glcd.tmp_RT_pump_rua = RT_pump_rua;
        tmp_glcd.tmp_RT_pump_cist = RT_pump_cist;
        tmp_glcd.tmp_lv_Rua = lv_cxRua;
+       tmp_glcd.tmp_status_v2v = statusV2V;
       }
       if(BTN_INCR)
       {
+       if(setupMode==0)
+       {
         ++curr_screen;
         if(curr_screen>2)curr_screen=0;
+       }
+       else //setupmode increase
+       {
+        SetModeChgVar(setupPos);
+       }
         PrintScreen(curr_screen);
+      }
+      if(BTN_ENTER && curr_screen == 2)
+      {
+       setupMode=1;
+       ++setupPos;
+       Image4.Visible=1;
+       if(setupPos==1)Image4.Top = 41;
+       if(setupPos==2)Image4.Top = 53;
+       if(setupPos==3)
+       {
+        setupMode=0;
+        setupPos = 0;
+        Image4.Visible=0;
+       }
+       PrintScreen(curr_screen);
       }
     }
 }
@@ -230,9 +236,7 @@ void DecodificaProtocolo()
   else
   if(Dta[0] == 'E' && Dta[1] == 'D' && Dta[2] == '5')RT_pump_rua =(Dta[3]-'0');
   else
-  if(Dta[0] == 'V' && Dta[1] == '2' && Dta[2] == 'V')V2V_On =(Dta[3]-'0');
-  else
-  if(Dta[0] == 'A' && Dta[1] == 'U' && Dta[2] == 'T')MAN_AUT =(Dta[3]-'0');
+  if(Dta[0] == 'S' && Dta[1] == 'T' && Dta[2] == 'A')statusV2V =(Dta[3]-'0');
   else
   if(Dta[0] == 'C' && Dta[1] == '1' && Dta[2] == 'O' && Dta[3] == 'K')flagCMD2=1;
   else
@@ -332,10 +336,52 @@ void PrintScreen(unsigned char current)
           case 1:
           if(lv_cxRua2==0)strcpy(NvCxRua02.Caption, "Vazia");
           else strcpy(NvCxRua02.Caption, "Cheia");
+          if(statusV2V==0)strcpy(StatV2V.Caption, "Off");
+          else strcpy(StatV2V.Caption, "On");
           DrawScreen(&Screen_cxRua);
           break;
           case 2:
-          DrawScreen(&Screen2);
+          if(RT_pump_rua==0)strcpy(RT_BP.Caption, "Normal");
+          else strcpy(RT_BP.Caption, "Alarm");
+          if(RT_pump_cist==0)strcpy(Rt_BCist.Caption, "Normal");
+          else strcpy(Rt_BCist.Caption, "Alarm");
+          if(tmpAut==0)strcpy(ManText.Caption, "Man");
+          else strcpy(ManText.Caption, "Aut");
+          if(tmpV2V==0)strcpy(V2VTxt.Caption, "Off");
+          else strcpy(V2VTxt.Caption, "On");
+          DrawScreen(&Misc1);
           break;
         }
+}
+
+void SetModeChgVar(unsigned char position)
+{
+  if(position==1)//man aut mode
+      {
+       tmpAut ^= 1; //toggle tmpAut
+       ctrl_msg = (tmpAut==0)?0:1;
+      }
+      if(position==2) //on v2v
+      {
+       tmpV2V ^= 1; //toggle tmpAut
+       /*if(tmpAut==1)tmpBtn1 = tmpV2V;*/
+       ctrl_msg = (tmpV2V==0)?2:3;
+      }
+      if(tmpAut!=tmpBtn0 || tmpV2V!=tmpBtn1) //comparativo para enviar msg
+      {
+       while(!RS484_Init(ctrl_msg))
+       {
+        PORTA.RA2 ^= 1;        //Enquanto o módulo não receber cofirmação de recebimento de cmd
+        Delay_ms(500);         //Retorna 1 se retorno ocorrer com sucesso.
+                               //Retorna 0 se retorno falhar.
+       }
+       //ATUALIZA CAPTION MAN-AUT - VALVULA
+         if(tmpAut==0)strcpy(ManText.Caption, "Man");
+         else strcpy(ManText.Caption, "Aut");
+         if(tmpV2V==0)strcpy(V2VTxt.Caption, "Off");
+         else strcpy(V2VTxt.Caption, "On");
+       }
+       tmpBtn0=tmpAut;   //confirma comparativo
+       tmpBtn1=tmpV2V;   //confirma comparativo
+       PORTA.RA2= 0; //desliga led
 }

@@ -104,7 +104,7 @@ char Label9_Caption[20] = "Nivel Caixas D\'agua";
          };
 
 
-  TScreen                Screen2;
+  TScreen                Misc1;
   TLabel                 Label10;
 char Label10_Caption[17] = "Rele Termico BC:";
 
@@ -112,19 +112,19 @@ char Label10_Caption[17] = "Rele Termico BC:";
 char Label11_Caption[16] = "Modo Man-Aut  :";
 
   TLabel                 Label12;
-char Label12_Caption[22] = "Status V2V          :";
+char Label12_Caption[20] = "CMD    V2V        :";
 
   TLabel                 RT_BP;
 char RT_BP_Caption[7] = "Normal";
 
-  TLabel                 Label14;
-char Label14_Caption[7] = "Normal";
+  TLabel                 Rt_BCist;
+char Rt_BCist_Caption[7] = "Normal";
 
-  TLabel                 Label15;
-char Label15_Caption[4] = "Man";
+  TLabel                 ManText;
+char ManText_Caption[4] = "Man";
 
-  TLabel                 Label16;
-char Label16_Caption[4] = "Off";
+  TLabel                 V2VTxt;
+char V2VTxt_Caption[4] = "Off";
 
   TLabel                 Label17;
 char Label17_Caption[17] = "Rele Termico BP:";
@@ -141,9 +141,9 @@ char Label18_Caption[14] = "Miscellaneous";
          &Label11,             
          &Label12,             
          &RT_BP,               
-         &Label14,             
-         &Label15,             
-         &Label16,             
+         &Rt_BCist,            
+         &ManText,             
+         &V2VTxt,              
          &Label17,             
          &Label18              
          };
@@ -170,11 +170,19 @@ char Label26_Caption[20] = "Nivel Caixas D\'agua";
 
   TLine                  Line5;
   TLine                  Line6;
-  TLabel                 * const code Screen3_Labels[3]=
+  TLabel                 Label1;
+char Label1_Caption[18] = "Status V2V      :";
+
+  TLabel                 StatV2V;
+char StatV2V_Caption[4] = "Off";
+
+  TLabel                 * const code Screen3_Labels[5]=
          {
          &NvCxRua02,           
          &Label25,             
-         &Label26              
+         &Label26,             
+         &Label1,              
+         &StatV2V              
          };
   TLine                  * const code Screen3_Lines[2]=
          {
@@ -193,20 +201,20 @@ static void InitializeObjects() {
   Tela_Inicial.Lines                     = Screen1_Lines;
   Tela_Inicial.ObjectsCount              = 11;
 
-  Screen2.LabelsCount               = 9;
-  Screen2.Labels                    = Screen2_Labels;
-  Screen2.ImagesCount               = 1;
-  Screen2.Images                    = Screen2_Images;
-  Screen2.LinesCount                = 2;
-  Screen2.Lines                     = Screen2_Lines;
-  Screen2.ObjectsCount              = 12;
+  Misc1.LabelsCount               = 9;
+  Misc1.Labels                    = Screen2_Labels;
+  Misc1.ImagesCount               = 1;
+  Misc1.Images                    = Screen2_Images;
+  Misc1.LinesCount                = 2;
+  Misc1.Lines                     = Screen2_Lines;
+  Misc1.ObjectsCount              = 12;
 
-  Screen_cxRua.LabelsCount               = 3;
+  Screen_cxRua.LabelsCount               = 5;
   Screen_cxRua.Labels                    = Screen3_Labels;
   Screen_cxRua.ImagesCount               = 0;
   Screen_cxRua.LinesCount                = 2;
   Screen_cxRua.Lines                     = Screen3_Lines;
-  Screen_cxRua.ObjectsCount              = 5;
+  Screen_cxRua.ObjectsCount              = 7;
 
 
   Label6.OwnerScreen     = &Tela_Inicial;
@@ -369,7 +377,7 @@ static void InitializeObjects() {
   Line4.Second_Point_Y  = 12;
   Line4.Visible         = 1;
 
-  Label10.OwnerScreen     = &Screen2;
+  Label10.OwnerScreen     = &Misc1;
   Label10.Order           = 0;
   Label10.Left            = 6;
   Label10.Top             = 25;
@@ -385,7 +393,7 @@ static void InitializeObjects() {
   Label10.OnClickPtr      = 0;
   Label10.OnPressPtr      = 0;
 
-  Label11.OwnerScreen     = &Screen2;
+  Label11.OwnerScreen     = &Misc1;
   Label11.Order           = 1;
   Label11.Left            = 6;
   Label11.Top             = 38;
@@ -401,11 +409,11 @@ static void InitializeObjects() {
   Label11.OnClickPtr      = 0;
   Label11.OnPressPtr      = 0;
 
-  Label12.OwnerScreen     = &Screen2;
+  Label12.OwnerScreen     = &Misc1;
   Label12.Order           = 2;
   Label12.Left            = 6;
   Label12.Top             = 50;
-  Label12.Width           = 70;
+  Label12.Width           = 69;
   Label12.Height          = 12;
   Label12.Visible         = 1;
   Label12.Active          = 1;
@@ -417,7 +425,7 @@ static void InitializeObjects() {
   Label12.OnClickPtr      = 0;
   Label12.OnPressPtr      = 0;
 
-  RT_BP.OwnerScreen     = &Screen2;
+  RT_BP.OwnerScreen     = &Misc1;
   RT_BP.Order           = 3;
   RT_BP.Left            = 93;
   RT_BP.Top             = 13;
@@ -433,55 +441,55 @@ static void InitializeObjects() {
   RT_BP.OnClickPtr      = 0;
   RT_BP.OnPressPtr      = 0;
 
-  Label14.OwnerScreen     = &Screen2;
-  Label14.Order           = 4;
-  Label14.Left            = 93;
-  Label14.Top             = 25;
-  Label14.Width           = 31;
-  Label14.Height          = 12;
-  Label14.Visible         = 1;
-  Label14.Active          = 1;
-  Label14.Caption         = Label14_Caption;
-  Label14.FontName        = Constantia9x11_Regular;
-  Label14.Font_Color      = 1;
-  Label14.OnUpPtr         = 0;
-  Label14.OnDownPtr       = 0;
-  Label14.OnClickPtr      = 0;
-  Label14.OnPressPtr      = 0;
+  Rt_BCist.OwnerScreen     = &Misc1;
+  Rt_BCist.Order           = 4;
+  Rt_BCist.Left            = 93;
+  Rt_BCist.Top             = 25;
+  Rt_BCist.Width           = 31;
+  Rt_BCist.Height          = 12;
+  Rt_BCist.Visible         = 1;
+  Rt_BCist.Active          = 1;
+  Rt_BCist.Caption         = Rt_BCist_Caption;
+  Rt_BCist.FontName        = Constantia9x11_Regular;
+  Rt_BCist.Font_Color      = 1;
+  Rt_BCist.OnUpPtr         = 0;
+  Rt_BCist.OnDownPtr       = 0;
+  Rt_BCist.OnClickPtr      = 0;
+  Rt_BCist.OnPressPtr      = 0;
 
-  Label15.OwnerScreen     = &Screen2;
-  Label15.Order           = 5;
-  Label15.Left            = 93;
-  Label15.Top             = 38;
-  Label15.Width           = 18;
-  Label15.Height          = 12;
-  Label15.Visible         = 1;
-  Label15.Active          = 1;
-  Label15.Caption         = Label15_Caption;
-  Label15.FontName        = Constantia9x11_Regular;
-  Label15.Font_Color      = 1;
-  Label15.OnUpPtr         = 0;
-  Label15.OnDownPtr       = 0;
-  Label15.OnClickPtr      = 0;
-  Label15.OnPressPtr      = 0;
+  ManText.OwnerScreen     = &Misc1;
+  ManText.Order           = 5;
+  ManText.Left            = 93;
+  ManText.Top             = 38;
+  ManText.Width           = 18;
+  ManText.Height          = 12;
+  ManText.Visible         = 1;
+  ManText.Active          = 1;
+  ManText.Caption         = ManText_Caption;
+  ManText.FontName        = Constantia9x11_Regular;
+  ManText.Font_Color      = 1;
+  ManText.OnUpPtr         = 0;
+  ManText.OnDownPtr       = 0;
+  ManText.OnClickPtr      = 0;
+  ManText.OnPressPtr      = 0;
 
-  Label16.OwnerScreen     = &Screen2;
-  Label16.Order           = 6;
-  Label16.Left            = 93;
-  Label16.Top             = 50;
-  Label16.Width           = 13;
-  Label16.Height          = 12;
-  Label16.Visible         = 1;
-  Label16.Active          = 1;
-  Label16.Caption         = Label16_Caption;
-  Label16.FontName        = Constantia9x11_Regular;
-  Label16.Font_Color      = 1;
-  Label16.OnUpPtr         = 0;
-  Label16.OnDownPtr       = 0;
-  Label16.OnClickPtr      = 0;
-  Label16.OnPressPtr      = 0;
+  V2VTxt.OwnerScreen     = &Misc1;
+  V2VTxt.Order           = 6;
+  V2VTxt.Left            = 93;
+  V2VTxt.Top             = 50;
+  V2VTxt.Width           = 13;
+  V2VTxt.Height          = 12;
+  V2VTxt.Visible         = 1;
+  V2VTxt.Active          = 1;
+  V2VTxt.Caption         = V2VTxt_Caption;
+  V2VTxt.FontName        = Constantia9x11_Regular;
+  V2VTxt.Font_Color      = 1;
+  V2VTxt.OnUpPtr         = 0;
+  V2VTxt.OnDownPtr       = 0;
+  V2VTxt.OnClickPtr      = 0;
+  V2VTxt.OnPressPtr      = 0;
 
-  Label17.OwnerScreen     = &Screen2;
+  Label17.OwnerScreen     = &Misc1;
   Label17.Order           = 7;
   Label17.Left            = 6;
   Label17.Top             = 13;
@@ -497,7 +505,7 @@ static void InitializeObjects() {
   Label17.OnClickPtr      = 0;
   Label17.OnPressPtr      = 0;
 
-  Label18.OwnerScreen     = &Screen2;
+  Label18.OwnerScreen     = &Misc1;
   Label18.Order           = 8;
   Label18.Left            = 32;
   Label18.Top             = 1;
@@ -513,7 +521,7 @@ static void InitializeObjects() {
   Label18.OnClickPtr      = 0;
   Label18.OnPressPtr      = 0;
 
-  Line1.OwnerScreen     = &Screen2;
+  Line1.OwnerScreen     = &Misc1;
   Line1.Order           = 9;
   Line1.First_Point_X   = 3;
   Line1.First_Point_Y   = 61;
@@ -521,7 +529,7 @@ static void InitializeObjects() {
   Line1.Second_Point_Y  = 61;
   Line1.Visible         = 1;
 
-  Line2.OwnerScreen     = &Screen2;
+  Line2.OwnerScreen     = &Misc1;
   Line2.Order           = 10;
   Line2.First_Point_X   = 3;
   Line2.First_Point_Y   = 12;
@@ -529,7 +537,7 @@ static void InitializeObjects() {
   Line2.Second_Point_Y  = 12;
   Line2.Visible         = 1;
 
-  Image4.OwnerScreen     = &Screen2;
+  Image4.OwnerScreen     = &Misc1;
   Image4.Order           = 11;
   Image4.Left            = 117;
   Image4.Top             = 41;
@@ -538,7 +546,7 @@ static void InitializeObjects() {
   Image4.PictureWidth    = 6;
   Image4.PictureHeight   = 6;
   Image4.Picture_Name    = seta_bmp;
-  Image4.Visible         = 1;
+  Image4.Visible         = 0;
   Image4.Active          = 1;
   Image4.OnUpPtr         = 0;
   Image4.OnDownPtr       = 0;
@@ -608,6 +616,38 @@ static void InitializeObjects() {
   Line6.Second_Point_X  = 119;
   Line6.Second_Point_Y  = 12;
   Line6.Visible         = 1;
+
+  Label1.OwnerScreen     = &Screen_cxRua;
+  Label1.Order           = 5;
+  Label1.Left            = 6;
+  Label1.Top             = 25;
+  Label1.Width           = 60;
+  Label1.Height          = 12;
+  Label1.Visible         = 1;
+  Label1.Active          = 1;
+  Label1.Caption         = Label1_Caption;
+  Label1.FontName        = Constantia9x11_Regular;
+  Label1.Font_Color      = 1;
+  Label1.OnUpPtr         = 0;
+  Label1.OnDownPtr       = 0;
+  Label1.OnClickPtr      = 0;
+  Label1.OnPressPtr      = 0;
+
+  StatV2V.OwnerScreen     = &Screen_cxRua;
+  StatV2V.Order           = 6;
+  StatV2V.Left            = 94;
+  StatV2V.Top             = 25;
+  StatV2V.Width           = 13;
+  StatV2V.Height          = 12;
+  StatV2V.Visible         = 1;
+  StatV2V.Active          = 1;
+  StatV2V.Caption         = StatV2V_Caption;
+  StatV2V.FontName        = Constantia9x11_Regular;
+  StatV2V.Font_Color      = 1;
+  StatV2V.OnUpPtr         = 0;
+  StatV2V.OnDownPtr       = 0;
+  StatV2V.OnClickPtr      = 0;
+  StatV2V.OnPressPtr      = 0;
 }
 
 static char IsInsideObject (unsigned int X, unsigned int Y, unsigned int Left, unsigned int Top, unsigned int Width, unsigned int Height) { // static

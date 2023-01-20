@@ -75,14 +75,14 @@ extern TLabel * const code Screen1_Labels[9];
 extern TLine * const code Screen1_Lines[2];
 
 
-extern TScreen Screen2;
+extern TScreen Misc1;
 extern TLabel Label10;
 extern TLabel Label11;
 extern TLabel Label12;
 extern TLabel RT_BP;
-extern TLabel Label14;
-extern TLabel Label15;
-extern TLabel Label16;
+extern TLabel Rt_BCist;
+extern TLabel ManText;
+extern TLabel V2VTxt;
 extern TLabel Label17;
 extern TLabel Label18;
 extern TLine Line1;
@@ -99,7 +99,9 @@ extern TLabel Label25;
 extern TLabel Label26;
 extern TLine Line5;
 extern TLine Line6;
-extern TLabel * const code Screen3_Labels[3];
+extern TLabel Label1;
+extern TLabel StatV2V;
+extern TLabel * const code Screen3_Labels[5];
 extern TLine * const code Screen3_Lines[2];
 
 
@@ -125,9 +127,9 @@ extern char Label10_Caption[];
 extern char Label11_Caption[];
 extern char Label12_Caption[];
 extern char RT_BP_Caption[];
-extern char Label14_Caption[];
-extern char Label15_Caption[];
-extern char Label16_Caption[];
+extern char Rt_BCist_Caption[];
+extern char ManText_Caption[];
+extern char V2VTxt_Caption[];
 extern char Label17_Caption[];
 extern char Label18_Caption[];
 extern char Line1_Caption[];
@@ -138,6 +140,8 @@ extern char Label25_Caption[];
 extern char Label26_Caption[];
 extern char Line5_Caption[];
 extern char Line6_Caption[];
+extern char Label1_Caption[];
+extern char StatV2V_Caption[];
 
 
 void DrawScreen(TScreen *aScreen);
@@ -175,6 +179,7 @@ struct glcd_tmp {
  unsigned char tmp_RT_pump_rua;
  unsigned char tmp_lv_Rua;
  unsigned char tmp_lv_Rua2;
+ unsigned char tmp_status_v2v;
 } tmp_glcd;
 
 
@@ -190,6 +195,11 @@ unsigned char ii;
 volatile unsigned long int ticks = 0;
 unsigned long tempoLed;
 unsigned long tempoSmsg;
+unsigned char statusV2V=0;
+
+bit SetupMode;
+unsigned char setupPos = 0;
+
 
 
 void Init_cfgMCU();
@@ -200,6 +210,7 @@ void DecodificaProtocolo();
 void REEnviarDados(unsigned char *retData);
 void Timers_Init();
 void PrintScreen(unsigned char current);
+void SetModeChgVar(unsigned char position);
 
 void UART_RCV() iv 0x0008 ics ICS_AUTO
 {
@@ -273,33 +284,9 @@ void main() {
  {
  Delay_ms(10);
 
- if( (Button(&PORTA, 5, 50, 0)) )
- {
- tmpAut ^= 1;
- ctrl_msg = (tmpAut==0)?0:1;
- }
- if( (Button(&PORTC, 0, 50, 0)) )
- {
- tmpV2V ^= 1;
-
- ctrl_msg = (tmpV2V==0)?2:3;
- }
- if(tmpAut!=tmpBtn0 || tmpV2V!=tmpBtn1)
- {
- while(!RS484_Init(ctrl_msg))
- {
- PORTA.RA2 ^= 1;
- Delay_ms(500);
-
- }
- }
- tmpBtn0=tmpAut;
- tmpBtn1=tmpV2V;
- PORTA.RA2= 0;
-
 
  if(tmp_glcd.tmp_lv_cist1!=lv_cist1 || tmp_glcd.tmp_lv_cist2!=lv_cist2 || tmp_glcd.tmp_lv_cistRua != lv_cistRua ||
- tmp_glcd.tmp_RT_pump_rua != RT_pump_rua || tmp_glcd.tmp_RT_pump_cist != RT_pump_cist || tmp_glcd.tmp_lv_Rua != lv_cxRua)
+ tmp_glcd.tmp_RT_pump_rua != RT_pump_rua || tmp_glcd.tmp_RT_pump_cist != RT_pump_cist || tmp_glcd.tmp_lv_Rua != lv_cxRua || tmp_glcd.tmp_status_v2v != statusV2V)
  {
  PrintScreen(curr_screen);
 
@@ -309,11 +296,34 @@ void main() {
  tmp_glcd.tmp_RT_pump_rua = RT_pump_rua;
  tmp_glcd.tmp_RT_pump_cist = RT_pump_cist;
  tmp_glcd.tmp_lv_Rua = lv_cxRua;
+ tmp_glcd.tmp_status_v2v = statusV2V;
  }
  if( (Button(&PORTA, 4, 50, 0)) )
  {
+ if(setupMode==0)
+ {
  ++curr_screen;
  if(curr_screen>2)curr_screen=0;
+ }
+ else
+ {
+ SetModeChgVar(setupPos);
+ }
+ PrintScreen(curr_screen);
+ }
+ if( (Button(&PORTA, 3, 50, 0))  && curr_screen == 2)
+ {
+ setupMode=1;
+ ++setupPos;
+ Image4.Visible=1;
+ if(setupPos==1)Image4.Top = 41;
+ if(setupPos==2)Image4.Top = 53;
+ if(setupPos==3)
+ {
+ setupMode=0;
+ setupPos = 0;
+ Image4.Visible=0;
+ }
  PrintScreen(curr_screen);
  }
  }
@@ -327,7 +337,7 @@ void Init_cfgMCU()
  TRISA.TRISA4 = 1;
  TRISA.TRISA5 = 1;
  TRISA.TRISA6 = 1;
-#line 214 "C:/Users/Talles/Documents/Talles/01_W3E/07-PROJETOS_IOT/ALTAVIS/GLCD/MASTER_GLCD/CISTERNA_Code/mikroC PRO for PIC/CISTERNA_main.c"
+#line 220 "C:/Users/Talles/Documents/Talles/01_W3E/07-PROJETOS_IOT/ALTAVIS/GLCD/MASTER_GLCD/CISTERNA_Code/mikroC PRO for PIC/CISTERNA_main.c"
  PORTA.RA2 = 0;
  TRISC.TRISC0 = 1;
 }
@@ -347,9 +357,7 @@ void DecodificaProtocolo()
  else
  if(Dta[0] == 'E' && Dta[1] == 'D' && Dta[2] == '5')RT_pump_rua =(Dta[3]-'0');
  else
- if(Dta[0] == 'V' && Dta[1] == '2' && Dta[2] == 'V')V2V_On =(Dta[3]-'0');
- else
- if(Dta[0] == 'A' && Dta[1] == 'U' && Dta[2] == 'T')MAN_AUT =(Dta[3]-'0');
+ if(Dta[0] == 'S' && Dta[1] == 'T' && Dta[2] == 'A')statusV2V =(Dta[3]-'0');
  else
  if(Dta[0] == 'C' && Dta[1] == '1' && Dta[2] == 'O' && Dta[3] == 'K')flagCMD2=1;
  else
@@ -363,7 +371,7 @@ void DecodificaProtocolo()
  UART1_Write(*Comand);
  Comand++;
  }
-#line 254 "C:/Users/Talles/Documents/Talles/01_W3E/07-PROJETOS_IOT/ALTAVIS/GLCD/MASTER_GLCD/CISTERNA_Code/mikroC PRO for PIC/CISTERNA_main.c"
+#line 258 "C:/Users/Talles/Documents/Talles/01_W3E/07-PROJETOS_IOT/ALTAVIS/GLCD/MASTER_GLCD/CISTERNA_Code/mikroC PRO for PIC/CISTERNA_main.c"
  return RS485_WaitReturn(TxtReturn, TimeOut);
 }
 
@@ -445,10 +453,52 @@ void PrintScreen(unsigned char current)
  case 1:
  if(lv_cxRua2==0)strcpy(NvCxRua02.Caption, "Vazia");
  else strcpy(NvCxRua02.Caption, "Cheia");
+ if(statusV2V==0)strcpy(StatV2V.Caption, "Off");
+ else strcpy(StatV2V.Caption, "On");
  DrawScreen(&Screen_cxRua);
  break;
  case 2:
- DrawScreen(&Screen2);
+ if(RT_pump_rua==0)strcpy(RT_BP.Caption, "Normal");
+ else strcpy(RT_BP.Caption, "Alarm");
+ if(RT_pump_cist==0)strcpy(Rt_BCist.Caption, "Normal");
+ else strcpy(Rt_BCist.Caption, "Alarm");
+ if(tmpAut==0)strcpy(ManText.Caption, "Man");
+ else strcpy(ManText.Caption, "Aut");
+ if(tmpV2V==0)strcpy(V2VTxt.Caption, "Off");
+ else strcpy(V2VTxt.Caption, "On");
+ DrawScreen(&Misc1);
  break;
  }
+}
+
+void SetModeChgVar(unsigned char position)
+{
+ if(position==1)
+ {
+ tmpAut ^= 1;
+ ctrl_msg = (tmpAut==0)?0:1;
+ }
+ if(position==2)
+ {
+ tmpV2V ^= 1;
+
+ ctrl_msg = (tmpV2V==0)?2:3;
+ }
+ if(tmpAut!=tmpBtn0 || tmpV2V!=tmpBtn1)
+ {
+ while(!RS484_Init(ctrl_msg))
+ {
+ PORTA.RA2 ^= 1;
+ Delay_ms(500);
+
+ }
+
+ if(tmpAut==0)strcpy(ManText.Caption, "Man");
+ else strcpy(ManText.Caption, "Aut");
+ if(tmpV2V==0)strcpy(V2VTxt.Caption, "Off");
+ else strcpy(V2VTxt.Caption, "On");
+ }
+ tmpBtn0=tmpAut;
+ tmpBtn1=tmpV2V;
+ PORTA.RA2= 0;
 }

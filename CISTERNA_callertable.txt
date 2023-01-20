@@ -96,12 +96,6 @@ main
 	Init_cfgMCU
 	UART1_Init
 	Timers_Init
-	Button
-		Delay_500us
-	RS484_Init
-		SendComand
-			UART1_Write
-			RS485_WaitReturn
 	PrintScreen
 		strcpy
 		DrawScreen
@@ -183,6 +177,14 @@ main
 					Glcd_Write_Data
 						Strobe
 							Delay_10us
+	Button
+		Delay_500us
+	SetModeChgVar
+		RS484_Init
+			SendComand
+				UART1_Write
+				RS485_WaitReturn
+		strcpy
 UART_RCV
 	UART1_Read
 	DecodificaProtocolo
