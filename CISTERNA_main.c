@@ -46,7 +46,6 @@ unsigned char flagCMD2 =0;//flag for C2OK
 static uint16_t _tout = 400;
 unsigned char ctrl_msg;
 unsigned char curr_screen =0;
-unsigned char setupMode = 0;
 
 /* Structure defining struct glcd */
 struct glcd_tmp {
@@ -73,10 +72,14 @@ unsigned char ii;
 volatile unsigned long int ticks = 0;  //Variável responsável por armazenar o incremento do Tick Timer
 unsigned long tempoLed;
 unsigned long tempoSmsg;
+unsigned long tempoBuzzer;
 unsigned char statusV2V=0;
 //setup mode variables
 bit SetupMode;
+bit flagAlarm;
+bit flagBuzzer;
 unsigned char setupPos = 0;
+
 
 
 
@@ -89,6 +92,9 @@ void REEnviarDados(unsigned char *retData);
 void Timers_Init();
 void PrintScreen(unsigned char current);
 void SetModeChgVar(unsigned char position);
+void set_alarm();
+void reset_alarm();
+void mute_alarm_off();
 
 void UART_RCV() iv 0x0008 ics ICS_AUTO
 {
@@ -135,6 +141,8 @@ void main() {
   Init_cfgMCU();
   UART1_Init(9600);
   Delay_ms(100);
+  PWM1_Init(3000);
+  PWM1_Set_Duty(255*80/100);
   //Configuração Geral
    INTCON.GIEH = 1;
    INTCON.GIEL = 1;
@@ -150,21 +158,30 @@ void main() {
    Timers_Init();
    tempoLed = start_timer(2);
    tempoSmsg = start_timer(20);
+   tempoBuzzer = start_timer(100);
    // initial conditions
    tmpBtn0 = 1;
    tmpAut = 1;//modo automatico
    tmpBtn1 = 0;
    tmpV2V = 0;//condição inicial fechada
+   flagAlarm=1;
+   flagBuzzer=1;
 
 
 
   while(TRUE)
     {
       Delay_ms(10);
-
+      if(RT_pump_cist||RT_pump_rua||!lv_cist1||!lv_cist2)set_alarm();//alarm condition
+      else
+      {
+       reset_alarm();
+       mute_alarm_off();
+      }
       //condições para atualizar tela GLCD
       if(tmp_glcd.tmp_lv_cist1!=lv_cist1 || tmp_glcd.tmp_lv_cist2!=lv_cist2 || tmp_glcd.tmp_lv_cistRua != lv_cistRua || 
-      tmp_glcd.tmp_RT_pump_rua != RT_pump_rua || tmp_glcd.tmp_RT_pump_cist != RT_pump_cist || tmp_glcd.tmp_lv_Rua != lv_cxRua || tmp_glcd.tmp_status_v2v != statusV2V)
+      tmp_glcd.tmp_RT_pump_rua != RT_pump_rua || tmp_glcd.tmp_RT_pump_cist != RT_pump_cist || tmp_glcd.tmp_lv_Rua != lv_cxRua || 
+      tmp_glcd.tmp_status_v2v != statusV2V)
       {
        PrintScreen(curr_screen);
        //reseta variaveis tmp
@@ -178,10 +195,10 @@ void main() {
       }
       if(BTN_INCR)
       {
-       if(setupMode==0)
+       if(SetupMode==0)
        {
         ++curr_screen;
-        if(curr_screen>2)curr_screen=0;
+        if(curr_screen>1)curr_screen=0;
        }
        else //setupmode increase
        {
@@ -189,21 +206,25 @@ void main() {
        }
         PrintScreen(curr_screen);
       }
-      if(BTN_ENTER && curr_screen == 2)
+      if(BTN_ENTER && curr_screen == 1)
       {
-       setupMode=1;
+       SetupMode=1;
        ++setupPos;
        Image4.Visible=1;
        if(setupPos==1)Image4.Top = 41;
        if(setupPos==2)Image4.Top = 53;
        if(setupPos==3)
        {
-        setupMode=0;
+        SetupMode=0;
         setupPos = 0;
         Image4.Visible=0;
        }
        PrintScreen(curr_screen);
       }
+    if(BTN_ENTER && curr_screen == 0)
+    {
+     flagAlarm^=1; //toggle flag alarm
+    }
     }
 }
 
@@ -219,6 +240,10 @@ void Init_cfgMCU()
    TRISA.TRISA2 = 1;*/
    PORTA.RA2 = 0;
    TRISC.TRISC0 = 1;
+   TRISC.TRISC2=0;
+   ANSELE = 0;
+   TRISE.TRISE1=0;//output for buzzer
+   PORTE.RE1 = 0;
 }
 
 void DecodificaProtocolo()
@@ -331,16 +356,11 @@ void PrintScreen(unsigned char current)
           else strcpy(NvCist2.Caption, "Cheia");
           if(lv_cxRua==0)strcpy(NvCistR.Caption, "Vazia");
           else strcpy(NvCistR.Caption, "Cheia");
+          if(lv_cxRua2==0)strcpy(NvCxRua02.Caption, "Vazia");
+          else strcpy(NvCxRua02.Caption, "Cheia");
           DrawScreen(&Tela_Inicial);
           break;
           case 1:
-          if(lv_cxRua2==0)strcpy(NvCxRua02.Caption, "Vazia");
-          else strcpy(NvCxRua02.Caption, "Cheia");
-          if(statusV2V==0)strcpy(StatV2V.Caption, "Off");
-          else strcpy(StatV2V.Caption, "On");
-          DrawScreen(&Screen_cxRua);
-          break;
-          case 2:
           if(RT_pump_rua==0)strcpy(RT_BP.Caption, "Normal");
           else strcpy(RT_BP.Caption, "Alarm");
           if(RT_pump_cist==0)strcpy(Rt_BCist.Caption, "Normal");
@@ -349,6 +369,8 @@ void PrintScreen(unsigned char current)
           else strcpy(ManText.Caption, "Aut");
           if(tmpV2V==0)strcpy(V2VTxt.Caption, "Off");
           else strcpy(V2VTxt.Caption, "On");
+          if(statusV2V==0)strcpy(StatV2V.Caption, "Off");
+          else strcpy(StatV2V.Caption, "On");
           DrawScreen(&Misc1);
           break;
         }
@@ -384,4 +406,30 @@ void SetModeChgVar(unsigned char position)
        tmpBtn0=tmpAut;   //confirma comparativo
        tmpBtn1=tmpV2V;   //confirma comparativo
        PORTA.RA2= 0; //desliga led
+}
+
+void set_alarm()
+{
+  if(flagAlarm)
+  {
+   if(!timeout(tempoBuzzer))return;
+   if(flagBuzzer)
+    PWM1_Start();
+   else
+    reset_alarm();
+    flagBuzzer^=1;
+   tempoBuzzer=start_timer(100);
+  }
+  else
+  PWM1_Stop();
+}
+
+void reset_alarm()
+{
+ PWM1_Stop();
+}
+
+void mute_alarm_off()
+{
+ flagAlarm=1;
 }

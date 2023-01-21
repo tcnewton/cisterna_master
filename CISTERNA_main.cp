@@ -68,10 +68,11 @@ extern TLabel NvCist1;
 extern TLabel NvCist2;
 extern TLabel NvCistR;
 extern TLabel Label5;
-extern TLabel Label9;
 extern TLine Line3;
 extern TLine Line4;
-extern TLabel * const code Screen1_Labels[9];
+extern TLabel NvCxRua02;
+extern TLabel Label25;
+extern TLabel * const code Screen1_Labels[10];
 extern TLine * const code Screen1_Lines[2];
 
 
@@ -84,25 +85,14 @@ extern TLabel Rt_BCist;
 extern TLabel ManText;
 extern TLabel V2VTxt;
 extern TLabel Label17;
-extern TLabel Label18;
 extern TLine Line1;
 extern TLine Line2;
 extern TImage Image4;
-extern TLabel * const code Screen2_Labels[9];
-extern TImage * const code Screen2_Images[1];
-extern TLine * const code Screen2_Lines[2];
-
-
-extern TScreen Screen_cxRua;
-extern TLabel NvCxRua02;
-extern TLabel Label25;
-extern TLabel Label26;
-extern TLine Line5;
-extern TLine Line6;
 extern TLabel Label1;
 extern TLabel StatV2V;
-extern TLabel * const code Screen3_Labels[5];
-extern TLine * const code Screen3_Lines[2];
+extern TLabel * const code Screen2_Labels[10];
+extern TImage * const code Screen2_Images[1];
+extern TLine * const code Screen2_Lines[2];
 
 
 
@@ -120,9 +110,10 @@ extern char NvCist1_Caption[];
 extern char NvCist2_Caption[];
 extern char NvCistR_Caption[];
 extern char Label5_Caption[];
-extern char Label9_Caption[];
 extern char Line3_Caption[];
 extern char Line4_Caption[];
+extern char NvCxRua02_Caption[];
+extern char Label25_Caption[];
 extern char Label10_Caption[];
 extern char Label11_Caption[];
 extern char Label12_Caption[];
@@ -131,15 +122,9 @@ extern char Rt_BCist_Caption[];
 extern char ManText_Caption[];
 extern char V2VTxt_Caption[];
 extern char Label17_Caption[];
-extern char Label18_Caption[];
 extern char Line1_Caption[];
 extern char Line2_Caption[];
 extern char Image4_Caption[];
-extern char NvCxRua02_Caption[];
-extern char Label25_Caption[];
-extern char Label26_Caption[];
-extern char Line5_Caption[];
-extern char Line6_Caption[];
 extern char Label1_Caption[];
 extern char StatV2V_Caption[];
 
@@ -168,7 +153,6 @@ unsigned char flagCMD2 =0;
 static  unsigned int  _tout = 400;
 unsigned char ctrl_msg;
 unsigned char curr_screen =0;
-unsigned char setupMode = 0;
 
 
 struct glcd_tmp {
@@ -195,10 +179,14 @@ unsigned char ii;
 volatile unsigned long int ticks = 0;
 unsigned long tempoLed;
 unsigned long tempoSmsg;
+unsigned long tempoBuzzer;
 unsigned char statusV2V=0;
 
 bit SetupMode;
+bit flagAlarm;
+bit flagBuzzer;
 unsigned char setupPos = 0;
+
 
 
 
@@ -211,6 +199,9 @@ void REEnviarDados(unsigned char *retData);
 void Timers_Init();
 void PrintScreen(unsigned char current);
 void SetModeChgVar(unsigned char position);
+void set_alarm();
+void reset_alarm();
+void mute_alarm_off();
 
 void UART_RCV() iv 0x0008 ics ICS_AUTO
 {
@@ -257,6 +248,8 @@ void main() {
  Init_cfgMCU();
  UART1_Init(9600);
  Delay_ms(100);
+ PWM1_Init(3000);
+ PWM1_Set_Duty(255*80/100);
 
  INTCON.GIEH = 1;
  INTCON.GIEL = 1;
@@ -272,21 +265,30 @@ void main() {
  Timers_Init();
  tempoLed =  (2+ticks) ;
  tempoSmsg =  (20+ticks) ;
+ tempoBuzzer =  (100+ticks) ;
 
  tmpBtn0 = 1;
  tmpAut = 1;
  tmpBtn1 = 0;
  tmpV2V = 0;
+ flagAlarm=1;
+ flagBuzzer=1;
 
 
 
  while( 1 )
  {
  Delay_ms(10);
-
+ if(RT_pump_cist||RT_pump_rua||!lv_cist1||!lv_cist2)set_alarm();
+ else
+ {
+ reset_alarm();
+ mute_alarm_off();
+ }
 
  if(tmp_glcd.tmp_lv_cist1!=lv_cist1 || tmp_glcd.tmp_lv_cist2!=lv_cist2 || tmp_glcd.tmp_lv_cistRua != lv_cistRua ||
- tmp_glcd.tmp_RT_pump_rua != RT_pump_rua || tmp_glcd.tmp_RT_pump_cist != RT_pump_cist || tmp_glcd.tmp_lv_Rua != lv_cxRua || tmp_glcd.tmp_status_v2v != statusV2V)
+ tmp_glcd.tmp_RT_pump_rua != RT_pump_rua || tmp_glcd.tmp_RT_pump_cist != RT_pump_cist || tmp_glcd.tmp_lv_Rua != lv_cxRua ||
+ tmp_glcd.tmp_status_v2v != statusV2V)
  {
  PrintScreen(curr_screen);
 
@@ -300,10 +302,10 @@ void main() {
  }
  if( (Button(&PORTA, 4, 50, 0)) )
  {
- if(setupMode==0)
+ if(SetupMode==0)
  {
  ++curr_screen;
- if(curr_screen>2)curr_screen=0;
+ if(curr_screen>1)curr_screen=0;
  }
  else
  {
@@ -311,20 +313,24 @@ void main() {
  }
  PrintScreen(curr_screen);
  }
- if( (Button(&PORTA, 3, 50, 0))  && curr_screen == 2)
+ if( (Button(&PORTA, 3, 50, 0))  && curr_screen == 1)
  {
- setupMode=1;
+ SetupMode=1;
  ++setupPos;
  Image4.Visible=1;
  if(setupPos==1)Image4.Top = 41;
  if(setupPos==2)Image4.Top = 53;
  if(setupPos==3)
  {
- setupMode=0;
+ SetupMode=0;
  setupPos = 0;
  Image4.Visible=0;
  }
  PrintScreen(curr_screen);
+ }
+ if( (Button(&PORTA, 3, 50, 0))  && curr_screen == 0)
+ {
+ flagAlarm^=1;
  }
  }
 }
@@ -337,9 +343,13 @@ void Init_cfgMCU()
  TRISA.TRISA4 = 1;
  TRISA.TRISA5 = 1;
  TRISA.TRISA6 = 1;
-#line 220 "C:/Users/Talles/Documents/Talles/01_W3E/07-PROJETOS_IOT/ALTAVIS/GLCD/MASTER_GLCD/CISTERNA_Code/mikroC PRO for PIC/CISTERNA_main.c"
+#line 241 "C:/Users/Talles/Documents/Talles/01_W3E/07-PROJETOS_IOT/ALTAVIS/GLCD/MASTER_GLCD/CISTERNA_Code/mikroC PRO for PIC/CISTERNA_main.c"
  PORTA.RA2 = 0;
  TRISC.TRISC0 = 1;
+ TRISC.TRISC2=0;
+ ANSELE = 0;
+ TRISE.TRISE1=0;
+ PORTE.RE1 = 0;
 }
 
 void DecodificaProtocolo()
@@ -371,7 +381,7 @@ void DecodificaProtocolo()
  UART1_Write(*Comand);
  Comand++;
  }
-#line 258 "C:/Users/Talles/Documents/Talles/01_W3E/07-PROJETOS_IOT/ALTAVIS/GLCD/MASTER_GLCD/CISTERNA_Code/mikroC PRO for PIC/CISTERNA_main.c"
+#line 283 "C:/Users/Talles/Documents/Talles/01_W3E/07-PROJETOS_IOT/ALTAVIS/GLCD/MASTER_GLCD/CISTERNA_Code/mikroC PRO for PIC/CISTERNA_main.c"
  return RS485_WaitReturn(TxtReturn, TimeOut);
 }
 
@@ -448,16 +458,11 @@ void PrintScreen(unsigned char current)
  else strcpy(NvCist2.Caption, "Cheia");
  if(lv_cxRua==0)strcpy(NvCistR.Caption, "Vazia");
  else strcpy(NvCistR.Caption, "Cheia");
+ if(lv_cxRua2==0)strcpy(NvCxRua02.Caption, "Vazia");
+ else strcpy(NvCxRua02.Caption, "Cheia");
  DrawScreen(&Tela_Inicial);
  break;
  case 1:
- if(lv_cxRua2==0)strcpy(NvCxRua02.Caption, "Vazia");
- else strcpy(NvCxRua02.Caption, "Cheia");
- if(statusV2V==0)strcpy(StatV2V.Caption, "Off");
- else strcpy(StatV2V.Caption, "On");
- DrawScreen(&Screen_cxRua);
- break;
- case 2:
  if(RT_pump_rua==0)strcpy(RT_BP.Caption, "Normal");
  else strcpy(RT_BP.Caption, "Alarm");
  if(RT_pump_cist==0)strcpy(Rt_BCist.Caption, "Normal");
@@ -466,6 +471,8 @@ void PrintScreen(unsigned char current)
  else strcpy(ManText.Caption, "Aut");
  if(tmpV2V==0)strcpy(V2VTxt.Caption, "Off");
  else strcpy(V2VTxt.Caption, "On");
+ if(statusV2V==0)strcpy(StatV2V.Caption, "Off");
+ else strcpy(StatV2V.Caption, "On");
  DrawScreen(&Misc1);
  break;
  }
@@ -501,4 +508,30 @@ void SetModeChgVar(unsigned char position)
  tmpBtn0=tmpAut;
  tmpBtn1=tmpV2V;
  PORTA.RA2= 0;
+}
+
+void set_alarm()
+{
+ if(flagAlarm)
+ {
+ if(! (ticks>tempoBuzzer?1:0) )return;
+ if(flagBuzzer)
+ PWM1_Start();
+ else
+ reset_alarm();
+ flagBuzzer^=1;
+ tempoBuzzer= (100+ticks) ;
+ }
+ else
+ PWM1_Stop();
+}
+
+void reset_alarm()
+{
+ PWM1_Stop();
+}
+
+void mute_alarm_off()
+{
+ flagAlarm=1;
 }

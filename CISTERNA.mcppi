@@ -52,17 +52,19 @@ Count=3
 [PLDS]
 Count=0
 [Useses]
-Count=10
+Count=12
 File0=Glcd
-File1=9
-File2=5
-File3=Glcd_Fonts
-File4=UART
-File5=Button
+File1=11
+File2=PWM12
+File3=8
+File4=C_String
+File5=Conversions
 File6=4
-File7=Conversions
-File8=C_String
-File9=8
+File7=Button
+File8=UART
+File9=Glcd_Fonts
+File10=5
+File11=9
 [INTERRUPT_DEFS]
 VECTOR_MODE=0
 IVT_BASE=00000008
@@ -74,7 +76,7 @@ Count=2
 0=mikroE Libraries
 1=System Libraries
 7=Button
-227=Glcd
+402=PWM3
 921=UART
 Count=5
 [PROGRAMMER_TYPE]

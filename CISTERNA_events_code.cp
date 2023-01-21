@@ -68,10 +68,11 @@ extern TLabel NvCist1;
 extern TLabel NvCist2;
 extern TLabel NvCistR;
 extern TLabel Label5;
-extern TLabel Label9;
 extern TLine Line3;
 extern TLine Line4;
-extern TLabel * const code Screen1_Labels[9];
+extern TLabel NvCxRua02;
+extern TLabel Label25;
+extern TLabel * const code Screen1_Labels[10];
 extern TLine * const code Screen1_Lines[2];
 
 
@@ -84,25 +85,14 @@ extern TLabel Rt_BCist;
 extern TLabel ManText;
 extern TLabel V2VTxt;
 extern TLabel Label17;
-extern TLabel Label18;
 extern TLine Line1;
 extern TLine Line2;
 extern TImage Image4;
-extern TLabel * const code Screen2_Labels[9];
-extern TImage * const code Screen2_Images[1];
-extern TLine * const code Screen2_Lines[2];
-
-
-extern TScreen Screen_cxRua;
-extern TLabel NvCxRua02;
-extern TLabel Label25;
-extern TLabel Label26;
-extern TLine Line5;
-extern TLine Line6;
 extern TLabel Label1;
 extern TLabel StatV2V;
-extern TLabel * const code Screen3_Labels[5];
-extern TLine * const code Screen3_Lines[2];
+extern TLabel * const code Screen2_Labels[10];
+extern TImage * const code Screen2_Images[1];
+extern TLine * const code Screen2_Lines[2];
 
 
 
@@ -120,9 +110,10 @@ extern char NvCist1_Caption[];
 extern char NvCist2_Caption[];
 extern char NvCistR_Caption[];
 extern char Label5_Caption[];
-extern char Label9_Caption[];
 extern char Line3_Caption[];
 extern char Line4_Caption[];
+extern char NvCxRua02_Caption[];
+extern char Label25_Caption[];
 extern char Label10_Caption[];
 extern char Label11_Caption[];
 extern char Label12_Caption[];
@@ -131,15 +122,9 @@ extern char Rt_BCist_Caption[];
 extern char ManText_Caption[];
 extern char V2VTxt_Caption[];
 extern char Label17_Caption[];
-extern char Label18_Caption[];
 extern char Line1_Caption[];
 extern char Line2_Caption[];
 extern char Image4_Caption[];
-extern char NvCxRua02_Caption[];
-extern char Label25_Caption[];
-extern char Label26_Caption[];
-extern char Line5_Caption[];
-extern char Line6_Caption[];
 extern char Label1_Caption[];
 extern char StatV2V_Caption[];
 
@@ -151,6 +136,5 @@ void DrawLine(TLine *Aline);
 void Check_TP();
 void Start_TP();
 #line 1 "c:/users/talles/documents/talles/01_w3e/07-projetos_iot/altavis/glcd/master_glcd/cisterna_code/mikroc pro for pic/cisterna_resources.h"
-const code char Bahnschrift_SemiBold8x11_Regular[];
 const code char Constantia9x11_Regular[];
 const code char seta_bmp[6];

@@ -95,7 +95,18 @@ main
 							Delay_10us
 	Init_cfgMCU
 	UART1_Init
+	PWM1_Init
+	PWM1_Set_Duty
+		Mul_16X16_U
 	Timers_Init
+	set_alarm
+		PWM1_Start
+		reset_alarm
+			PWM1_Stop
+		PWM1_Stop
+	reset_alarm
+		PWM1_Stop
+	mute_alarm_off
 	PrintScreen
 		strcpy
 		DrawScreen
