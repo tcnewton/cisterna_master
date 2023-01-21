@@ -288,7 +288,7 @@ void main() {
 
  if(tmp_glcd.tmp_lv_cist1!=lv_cist1 || tmp_glcd.tmp_lv_cist2!=lv_cist2 || tmp_glcd.tmp_lv_cistRua != lv_cistRua ||
  tmp_glcd.tmp_RT_pump_rua != RT_pump_rua || tmp_glcd.tmp_RT_pump_cist != RT_pump_cist || tmp_glcd.tmp_lv_Rua != lv_cxRua ||
- tmp_glcd.tmp_status_v2v != statusV2V)
+ tmp_glcd.tmp_status_v2v != statusV2V || tmp_glcd.tmp_lv_Rua2 != lv_cxRua2)
  {
  PrintScreen(curr_screen);
 
@@ -299,6 +299,7 @@ void main() {
  tmp_glcd.tmp_RT_pump_cist = RT_pump_cist;
  tmp_glcd.tmp_lv_Rua = lv_cxRua;
  tmp_glcd.tmp_status_v2v = statusV2V;
+ tmp_glcd.tmp_lv_Rua2 = lv_cxRua2;
  }
  if( (Button(&PORTA, 4, 50, 0)) )
  {
@@ -343,7 +344,7 @@ void Init_cfgMCU()
  TRISA.TRISA4 = 1;
  TRISA.TRISA5 = 1;
  TRISA.TRISA6 = 1;
-#line 241 "C:/Users/Talles/Documents/Talles/01_W3E/07-PROJETOS_IOT/ALTAVIS/GLCD/MASTER_GLCD/CISTERNA_Code/mikroC PRO for PIC/CISTERNA_main.c"
+#line 242 "C:/Users/Talles/Documents/Talles/01_W3E/07-PROJETOS_IOT/ALTAVIS/GLCD/MASTER_GLCD/CISTERNA_Code/mikroC PRO for PIC/CISTERNA_main.c"
  PORTA.RA2 = 0;
  TRISC.TRISC0 = 1;
  TRISC.TRISC2=0;
@@ -367,6 +368,8 @@ void DecodificaProtocolo()
  else
  if(Dta[0] == 'E' && Dta[1] == 'D' && Dta[2] == '5')RT_pump_rua =(Dta[3]-'0');
  else
+ if(Dta[0] == 'E' && Dta[1] == 'D' && Dta[2] == '6')lv_cxRua2 =(Dta[3]-'0');
+ else
  if(Dta[0] == 'S' && Dta[1] == 'T' && Dta[2] == 'A')statusV2V =(Dta[3]-'0');
  else
  if(Dta[0] == 'C' && Dta[1] == '1' && Dta[2] == 'O' && Dta[3] == 'K')flagCMD2=1;
@@ -381,7 +384,7 @@ void DecodificaProtocolo()
  UART1_Write(*Comand);
  Comand++;
  }
-#line 283 "C:/Users/Talles/Documents/Talles/01_W3E/07-PROJETOS_IOT/ALTAVIS/GLCD/MASTER_GLCD/CISTERNA_Code/mikroC PRO for PIC/CISTERNA_main.c"
+#line 286 "C:/Users/Talles/Documents/Talles/01_W3E/07-PROJETOS_IOT/ALTAVIS/GLCD/MASTER_GLCD/CISTERNA_Code/mikroC PRO for PIC/CISTERNA_main.c"
  return RS485_WaitReturn(TxtReturn, TimeOut);
 }
 

@@ -181,7 +181,7 @@ void main() {
       //condições para atualizar tela GLCD
       if(tmp_glcd.tmp_lv_cist1!=lv_cist1 || tmp_glcd.tmp_lv_cist2!=lv_cist2 || tmp_glcd.tmp_lv_cistRua != lv_cistRua || 
       tmp_glcd.tmp_RT_pump_rua != RT_pump_rua || tmp_glcd.tmp_RT_pump_cist != RT_pump_cist || tmp_glcd.tmp_lv_Rua != lv_cxRua || 
-      tmp_glcd.tmp_status_v2v != statusV2V)
+      tmp_glcd.tmp_status_v2v != statusV2V || tmp_glcd.tmp_lv_Rua2 != lv_cxRua2)
       {
        PrintScreen(curr_screen);
        //reseta variaveis tmp
@@ -192,6 +192,7 @@ void main() {
        tmp_glcd.tmp_RT_pump_cist = RT_pump_cist;
        tmp_glcd.tmp_lv_Rua = lv_cxRua;
        tmp_glcd.tmp_status_v2v = statusV2V;
+       tmp_glcd.tmp_lv_Rua2 = lv_cxRua2;
       }
       if(BTN_INCR)
       {
@@ -260,6 +261,8 @@ void DecodificaProtocolo()
   if(Dta[0] == 'E' && Dta[1] == 'D' && Dta[2] == '4')RT_pump_cist =(Dta[3]-'0');
   else
   if(Dta[0] == 'E' && Dta[1] == 'D' && Dta[2] == '5')RT_pump_rua =(Dta[3]-'0');
+  else
+  if(Dta[0] == 'E' && Dta[1] == 'D' && Dta[2] == '6')lv_cxRua2 =(Dta[3]-'0');
   else
   if(Dta[0] == 'S' && Dta[1] == 'T' && Dta[2] == 'A')statusV2V =(Dta[3]-'0');
   else
